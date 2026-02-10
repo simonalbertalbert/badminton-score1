@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+  <title>Score Badminton</title>
+  <style>
+    :root{
+      --bg:#0b1220;
+      --txt:#eef2ff;
+      --muted:#a8b0c6;
+      --accent:#6ee7b7;
+      --btn:#1f2a44;
+      --danger:#7a2f3f;
+      --shadow:0 18px 45px rgba(0,0,0,.35);
+      --r:22px;
+    }
+    *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
+      background:radial-gradient(1200px 900px at 50% -10%, #1a2a52 0%, var(--bg) 55%);
+      color:var(--txt);
+      min-height:100vh;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      padding:16px;
+    }
+    .app{
+      width:min(980px,100%);
+      background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.03));
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:var(--r);
+      box-shadow:var(--shadow);
+      display:grid;
+      gap:14px;
+      padding:16px;
+    }
+    .serveLine{
+      text-align:center;
+      font-size:20px;
+      font-weight:800;
+    }
+    .serveLine span{
+      font-weight:600;
+      color:var(--muted);
+      font-size:16px;
+    }
+    .scoreboard{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+    }
+    .side{
+      padding:16px;
+      display:grid;
+      gap:12px;
+    }
+    .side + .side{
+      border-left:1px solid rgba(255,255,255,.15);
+    }
+    .nameInput{
+      background:rgba(0,0,0,.25);
+      border:1px solid rgba(255,255,255,.25);
+      color:var(--txt);
+      border-radius:12px;
+      padding:8px 10px;
+      font-size:16px;
+      font-weight:700;
+      width:100%;
+      text-align:center;
+    }
+    .score{
+      font-size:90px;
+      font-weight:900;
+      text-align:center;
+    }
+    .controls{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+    }
+    .big{
+      font-size:30px;
+      padding:18px 12px;
+      border-radius:18px;
+      border:0;
+      color:var(--txt);
+    }
+    .plus{background:#1f7a5f;}
+    .minus{background:var(--danger);}
+    .reset{
+      margin-top:10px;
+      width:100%;
+      font-size:22px;
+      padding:18px;
+      border-radius:18px;
+      border:0;
+      background:#374151;
+      color:var(--txt);
+      font-weight:800;
+    }
+    @media(max-width:720px){
+      .scoreboard{grid-template-columns:1fr;}
+      .side + .side{border-left:0;border-top:1px solid rgba(255,255,255,.15);}
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <div class="serveLine" id="serveLine">
+    Serveur : Joueur A <span>(à droite)</span>
+  </div>
+
+  <div class="scoreboard">
+    <section class="side">
+      <input class="nameInput" id="nameA" value="Joueur A">
+      <div class="score" id="scoreA">0</div>
+      <div class="controls">
+        <button class="big plus" id="plusA">+1</button>
+        <button class="big minus" id="minusA">-1</button>
+      </div>
+    </section>
+
+    <section class="side">
+      <input class="nameInput" id="nameB" value="Joueur B">
+      <div class="score" id="scoreB">0</div>
+      <div class="controls">
+        <button class="big plus" id="plusB">+1</button>
+        <button class="big minus" id="minusB">-1</button>
+      </div>
+    </section>
+  </div>
+
+  <button class="reset" id="resetBtn">Remettre les scores à 0</button>
+</div>
+
+<script>
+(() => {
+  const state = { a:0, b:0, server:"A" };
+  const $ = id => document.getElementById(id);
+
+  function side(score){ return score % 2 === 0 ? "à droite" : "à gauche"; }
+
+  function render(){
+    scoreA.textContent = state.a;
+    scoreB.textContent = state.b;
+    const nameA = nameAInput.value || "Joueur A";
+    const nameB = nameBInput.value || "Joueur B";
+    const serverName = state.server === "A" ? nameA : nameB;
+    const serverScore = state.server === "A" ? state.a : state.b;
+    serveLine.textContent = `Serveur : ${serverName} (${side(serverScore)})`;
+  }
+
+  const nameAInput = $("nameA");
+  const nameBInput = $("nameB");
+
+  plusA.onclick = () => { state.a++; state.server="A"; render(); };
+  plusB.onclick = () => { state.b++; state.server="B"; render(); };
+  minusA.onclick = () => { state.a=Math.max(0,state.a-1); state.server="A"; render(); };
+  minusB.onclick = () => { state.b=Math.max(0,state.b-1); state.server="B"; render(); };
+  resetBtn.onclick = () => { state.a=0; state.b=0; state.server="A"; render(); };
+
+  nameAInput.oninput = render;
+  nameBInput.oninput = render;
+
+  render();
+})();
+</script>
+</body>
+</html>
